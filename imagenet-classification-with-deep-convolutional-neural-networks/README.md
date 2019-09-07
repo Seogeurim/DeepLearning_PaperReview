@@ -140,9 +140,21 @@ GPU를 한 개 사용해 학습시켰을 때 보다 top-1과 top-5 error rate를
 
 #### 3.3 Local Response Normalization
 
+
+
 #### 3.4 Overlapping Pooling
 
+하나의 Pooling layer가 s 픽셀씩 떨어져서 , z x z 크기만큼 요약한다고 할 때, 
+
+* s=z일 경우, CNN에서 전통적으로 흔히 사용하는 local pooling이 된다. 
+* s&lt;z일 경우, overlapping pooling이 된다. \(pooling unit들이 겹치게 된다.\)
+
+본 논문에서는 overlapping pooling 방식을 사용했다. \(s=2, z=3\)  
+이는 non-overlapping 방식\(s=2, z=2\)과 비교했을 때, top-1과 top-5 error rate를 각각 0.4%, 0.3%씩 줄일 수 있었다. 또한 이 방식이 overfitting도 조금 줄여주는 것을 확인할 수 있었다. 
+
 #### 3.5 Overall Architecture
+
+
 
 ### 4 Reducing Overfitting
 
