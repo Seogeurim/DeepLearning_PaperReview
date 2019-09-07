@@ -131,7 +131,7 @@ GTX 580 GPU 하나의 메모리는 3GB 라서, 120만 개의 학습 샘플을 �
 
 * 현재의 GPU는 cross-GPU 병렬성이 잘 구현되어 있어서,  host 메모리를 거치지 않고 GPU 메모리간의 직접 읽고 쓰기가 가능하다.
 * 각 GPU에 커널\(또는 뉴런\)의 절반을 배치하였다.
-* GPU는 오로지 특정 layer에서만 커뮤니케이션한다. \(layer3\)
+* GPU는 오로지 특정 layer에서만 커뮤니케이션한다.
 
 > This means that, for example, the kernels of layer 3 take input from all kernel maps in layer 2. However, kernels in layer 4 take input only from those kernel maps in layer 3 which reside on the same GPU.
 
@@ -189,9 +189,34 @@ Pooling layer가, s 픽셀씩 떨어져 z x z 크기만큼 요약하는 unit들�
 
 ### 4 Reducing Overfitting
 
+본 논문의 네트워크 아키텍쳐는 6,000만 개의 파라미터를 가진다.   
+이렇게 많은 파라미터를 overfitting 없이 학습시키기란 매우 어려운 일이다.  
+Overfitting 문제를 해결하기 위한 두 가지의 주된 방법을 소개한다.
+
 #### 4.1 Data Augmentation
 
+이미지 데이터의 overfitting을 줄이기 위한 가장 쉽고 흔한 방법은 인위적으로 데이터를 증강시키는 것이다. 이 때 같은 라벨을 갖도록 하면서 증강시킨다. \(Label-preserving Transformation\)  
+CPU에서 python code로 이미지를 변형시키는 동안 GPU에서는 이전의 배치 이미지들을 학습시켰다.   
+이는 아주 효율적인 data augmentation scheme라고 할 수 있겠다. 
+
+1. Image Translations & Horizontal Reflection
+   * 256 x 256 크기의 이미지로부터 랜덤하게 224 x 224 패치를 추출하고, 그것을 수평 뒤집기 하였다. 이는 training set을 2048배로 늘릴 수 있다. 
+   * test 과정에서는, 다섯 개의 224 x 224 패치\(4개는 코너, 1개는 중심에서 추출\)와 그를 수평 뒤집기 한 것, 총 열 개의 패치를 사용하였다. 그리고 그로부터 softmax layer의 예측값을 평균내었다. 
+2. altering the Intensities of RGB channels
+   * ImageNet training set의 RGB 픽셀 값에 PCA를 적용하였다. 각 학습 이미지에는, 찾아낸 principal component들의 곱을 더해주었다. 그것은 평균 0, 표준편차 0.1을 가지는 가우시안 분포에서 이끌어낸 랜덤 변수와 아이겐밸류 값에 비례하는 크기를 곱한 것이다. 
+   *  ![](../.gitbook/assets/alexnet_rgb.png) 
+   * $$P_{i}$$는 i 번째 아이겐벡터이며, $$\lambda_{i}$$ 는 RGB 채널 값의 3 x 3 covariance matrix의 아이겐밸류이다. $$\alpha_{i}$$는 앞서 말한 랜덤 변수이다. 
+   * 이는 이미지의 중요한 성질을 가져오며, top-1 error rate를 1% 감소시켰다. 
+
 #### 4.2 Dropout
+
+hidden neuron 값을 0.5의 확률로 0으로 셋팅하는 Dropout 기법을 사용하였다. 
+
+* 여러 다른 모델들을 조합하는 것보다 비용이 적다. 
+* input에 따라, 네트워크 구조는 달라지지만 weight를 공유한다.
+* 뉴런 간의 complex co-adaptation을 줄여준다. \(다른 뉴런에게 의존하지 않도록 한다.\)
+* test 과정에서는, 모든 뉴런을 사용하되 결과값을 0.5로 나눠주어, 아주 많은 dropout 네트워크에 의해 계산된 예측가능한 분포의 기하 평균을 얻도록 한다. 
+* \(Figure2\) 6,7번 fully-connected layer에서 dropout을 사용하였다. 
 
 ### 5 Details of learning
 
