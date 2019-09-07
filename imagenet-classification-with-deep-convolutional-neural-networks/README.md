@@ -4,7 +4,7 @@ description: '#Vision #AlexNet'
 
 # ImageNet Classification with Deep Convolutional Neural Networks
 
-#### 논문제목 : ImageNet Classification with Deep Convolutional Neural Networks 논문저자 : Alex Krizhevsky, Ilya Sutskever, Geoffrey E. Hinton
+#### 논문제목 : ImageNet Classification with Deep Convolutional Neural Networks  논문저자 : Alex Krizhevsky, Ilya Sutskever, Geoffrey E. Hinton
 
 위 논문을 이해하기 위해서는, CNN에 대한 기본적인 이해가 필수적이다.   
 CNN에 대한 설명은 아래 페이지에 따로 기재해두겠다.  
@@ -126,7 +126,17 @@ Gradient Descent를 사용하는 경우, saturating 함수들이 non-saturating 
 
 #### 3.2 Training on Multiple GPUs
 
-GTX 580 GPU 하나의 메모리는 3GB여서, 120만 개의 학습 샘플을 학습시키기에는 너무 작다. 그래서 두 개의 GPU에 네트워크를 분산시켰다. 현재의 GPU는 cross-GPU 병
+GTX 580 GPU 하나의 메모리는 3GB 라서, 120만 개의 학습 샘플을 학습시키기에는 너무 작다.   
+따라서, 두 개의 GPU를 병렬로 구성하였다.
+
+* 당시의 GPU는 cross-GPU 병렬성이 잘 구현되어 있어서,  host 메모리를 거치지 않고 GPU 메모리간의 직접 읽고 쓰기가 가능하다.
+* 각 GPU에 커널\(또는 뉴런\)의 절반을 배치하였다.
+* GPU는 오로지 특정 layer에서만 커뮤니케이션한다. \(layer3\)
+
+> This means that, for example, the kernels of layer 3 take input from all kernel maps in layer 2. However, kernels in layer 4 take input only from those kernel maps in layer 3 which reside on the same GPU.
+
+이 구조를 사용한 결과,   
+GPU를 한 개 사용해 학습시켰을 때 보다 top-1과 top-5 error rate를 각각 1.7%, 1.2%씩 줄일 수 있었다.
 
 #### 3.3 Local Response Normalization
 
