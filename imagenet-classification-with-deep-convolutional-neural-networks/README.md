@@ -220,6 +220,20 @@ hidden neuron 값을 0.5의 확률로 0으로 셋팅하는 Dropout 기법을 사
 
 ### 5 Details of learning
 
+Stochastic Gradient Descent 를 사용해 모델을 학습하였다.   
+batch size는 128, momentum은 0.9, 그리고 weight decay는 0.0005를 사용하였다.  
+0.0005 라는 작은 weight decay 값이 학습에 중요했다.   
+\(단순히 regularizer가 아니라, training error를 줄여주었다.\)
+
+각 layer의 weight는 평균 0, 표준편차 0.01인 가우시안 분포로 초기화했다.  
+bias는, 2,4,5번 convolution layer와 fully-connected hidden layer에서 1로 초기화했고, \(학습 초반에 ReLU에 양수 입력을 주기 때문에 빠르게 학습할 수 있다.\) 그 외의 layer들에서는 0으로 초기화했다. 
+
+모든 layer에서 learning rate는 똑같이 주었으며, 학습을 하며 조금씩 수정하였다.  
+learning rate는 0.01로 시작하여, 학습 동안 3번 바꿔주었다. \(10으로 나눠주었다.\)
+
+120만 장의 이미지인 training set을 대략 90 사이클 학습했고,   
+학습 시간은 두 개의 NVIDIA GTX 580 3GB GPU를 사용해 5-6일이 걸렸다.
+
 ### 6 Results
 
 #### 6.1 Qualitative Evaluations
