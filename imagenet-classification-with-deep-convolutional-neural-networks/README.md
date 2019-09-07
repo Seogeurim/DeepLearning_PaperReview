@@ -69,7 +69,7 @@ Convolutional neural networks \(CNNs\) 는,
 본 논문에서는,  
 ILSVRC-2010과 ILSVRC-2012에 사용된 ImageNet의 서브셋으로 아주 큰 CNN을 학습시켰다.
 
-2D convolution을 GPU에 최적화하여 구현하였고, 누구나 사용할 수 있도록 배포했다. [https://code.google.com/archive/p/cuda-convnet/](https://code.google.com/archive/p/cuda-convnet/)
+2D convolution을 GPU에 최적화하여 구현하였고, 누구나 사용할 수 있도록 배포했다. [https://code.google.com/p/cuda-convnet/](https://code.google.com/p/cuda-convnet/)
 
 최종 네트워크는 5개의 convolutional layer와 3개의 fully-connected layer를 포함하고 있다.  
 이 중 어떤 convolutional layer라도 빠진다면, 낮은 성능을 보였다.
@@ -116,7 +116,7 @@ ImageNet은 다양한 해상도의 이미지들로 이루어져있지만, 본 �
 
 #### 3.1 ReLU Nonlinearity
 
-* saturating \(비선형\) 함수 : 결과값이 포화\(saturated\)되는 함수,  gradient vanishing 현상을 야기 \(탄젠트 함수 \[$$tanh(x)$$\], 시그모이드 함수 \[$$(1+e^{-x})^{-1}$$\]\)
+* saturating \(비선형\) 함수 : 결과값이 포화\(saturated\)되는 함수, gradient vanishing 현상을 야기 \(탄젠트 함수 \[$$tanh(x)$$\], 시그모이드 함수 \[$$(1+e^{-x})^{-1}$$\]\)
 * non-saturating \(비선형\) 함수 : 그 반대인 함수 \(ReLU 함수 \[$$max(0,x)$$\]\)
 
 Gradient Descent를 사용하는 경우, saturating 함수들이 non-saturating 함수보다 느리다고 한다. 즉, Deep convolutional neural net은  ReLU 함수를 사용했을 때 탄젠트 함수보다 몇 배는 더 빠르다.  
@@ -129,7 +129,7 @@ Gradient Descent를 사용하는 경우, saturating 함수들이 non-saturating 
 GTX 580 GPU 하나의 메모리는 3GB 라서, 120만 개의 학습 샘플을 학습시키기에는 너무 작다.   
 따라서, 두 개의 GPU를 병렬로 구성하였다.
 
-* 당시의 GPU는 cross-GPU 병렬성이 잘 구현되어 있어서,  host 메모리를 거치지 않고 GPU 메모리간의 직접 읽고 쓰기가 가능하다.
+* 현재의 GPU는 cross-GPU 병렬성이 잘 구현되어 있어서,  host 메모리를 거치지 않고 GPU 메모리간의 직접 읽고 쓰기가 가능하다.
 * 각 GPU에 커널\(또는 뉴런\)의 절반을 배치하였다.
 * GPU는 오로지 특정 layer에서만 커뮤니케이션한다. \(layer3\)
 
@@ -140,11 +140,22 @@ GPU를 한 개 사용해 학습시켰을 때 보다 top-1과 top-5 error rate를
 
 #### 3.3 Local Response Normalization
 
+Local Normalization이 Generalization을 도울 수 있다.  
+\* Generalization : Input data나 학습 데이터가 달라져도 성능 차이가 나지 않게 하는 것.
 
+신경생물학의 lateral inhibition이라는 현상을 모델링한 것이 local response normalization이다.   
+이는 서로 다른 커널을 사용하여 계산된 뉴런 결과값 간 경쟁을 일으켜 더 큰 활동을 만든다.
+
+![](../.gitbook/assets/alexnet_lrn.png)
+
+* $$a^{i}_{x,y}$$ : 커널 i 를 이미지의 \(x, y\) 위치에 적용해 계산된 뉴런의 activity
+* $$b^{i}_{x,y}$$ : $$a^{i}_{x,y}$$에 ReLU nonlinearity를 적용하여 response-normalized된 activity  \(같은 공간적 위치에서 $$n$$개의 인접한 커널 맵들의 합을 이용해 정규화한다.\)
+* $$N$$ : layer에서 모든 커널의 수 
+* $$k, n, \alpha, \beta$$ : hyper-parameter,  본 논문에서는 $$k = 2 , n = 5 , α = 10 − 4 , β = 0.75 $$ 로 설정했다.
 
 #### 3.4 Overlapping Pooling
 
-하나의 Pooling layer가 s 픽셀씩 떨어져서 , z x z 크기만큼 요약한다고 할 때, 
+Pooling layer가, s 픽셀씩 떨어져 z x z 크기만큼 요약하는 unit들로 구성되어 있다고 할 때, 
 
 * s=z일 경우, CNN에서 전통적으로 흔히 사용하는 local pooling이 된다. 
 * s&lt;z일 경우, overlapping pooling이 된다. \(pooling unit들이 겹치게 된다.\)
@@ -154,7 +165,27 @@ GPU를 한 개 사용해 학습시켰을 때 보다 top-1과 top-5 error rate를
 
 #### 3.5 Overall Architecture
 
+전체적인 구조를 살펴보는 파트이다. Figure 2를 보면 된다 !   
+논문에서 제공되는 코드와 파라미터 파일 : [https://code.google.com/p/cuda-convnet/](https://code.google.com/p/cuda-convnet/)
 
+8개의 layer로 구성되어 있다. 
+
+* 5개의 Convolutional Layer
+  * 2,4,5번 layer는 같은 GPU에서 이전 layer의 같은 채널의 커널 맵들과만 연결되어 있다.
+  * 3번 convolutional layer는 2번 layer의 모든 커널 맵들과 연결되어 있다. 
+* 3개의 Fully-Connected Layer
+  * 이전 layer의 모든 뉴런들과 연결되어 있다.
+  * 마지막 FC layer의 output은 1000-way softmax로 들어가 1000개의 라벨로 분류된다. 
+* Response-normalization Layer는 1,2번 convolutional layer에 연결되었다.
+* Max-pooling layer는 response-normalization layer와 5번 convolutional layer에 연결되었다.
+* ReLU non-linearity는 모든 layer의 output에 적용되었다. 
+
+1. 첫번째 convolution layer  224 x 224 x 3 input image를 받아, 96개의 11 x 11 x 3 사이즈 필터 커널로 컨볼루션 해준다.  stride는 4로 설정하였다.
+2. 두번째 convolutional layer  첫번째 layer에서 response-normalize와 pooling 과정을 거친 결과를 input으로 받는다.  256개의 5 x 5 x 48 사이즈 필터 커널로 컨볼루션 해준다.
+3. 세번째 convolution layer  두번째 layer에서 response-normalize와 pooling 과정을 거친 결과를 input으로 받는다.  384개의 3 x 3 x 256 사이즈 필터 커널로 컨볼루션 해준다.
+4. 네번째 convolution layer  세번째 layer 결과를 input으로 받아, 384개의 3 x 3 x 192 사이즈 필터 커널로 컨볼루션 해준다.
+5. 다섯번째 convolution layer  네번째 layer 결과를 input으로 받아, 256개의 3 x 3 x 192 사이즈 필터 커널로 컨볼루션 해준다.
+6. fully-connected layer  각각 4096개의 뉴런을 가진다. 
 
 ### 4 Reducing Overfitting
 
