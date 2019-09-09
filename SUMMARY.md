@@ -7,6 +7,7 @@
 
 ## Code-Review <a id="codereview"></a>
 
-* [Building CNN Models 1](codereview/building-cnn-models.md)
+* [Building CNN Models 1](codereview/building-cnn-models/README.md)
+  * [load\_data.py](codereview/building-cnn-models/load_data.py.md)
 * [Building CNN Models 2](codereview/building-cnn-models-2.md)
 
