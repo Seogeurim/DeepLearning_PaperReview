@@ -5,3 +5,8 @@
   * [CNN](imagenet-classification-with-deep-convolutional-neural-networks/cnn.md)
 * [Improving neural networks by preventing co-adaptation of feature detectors](improving-neural-networks-by-preventing-co-adaptation-of-feature-detectors.md)
 
+## Code-Review <a id="codereview"></a>
+
+* [Building CNN Models 1](codereview/building-cnn-models.md)
+* [Building CNN Models 2](codereview/building-cnn-models-2.md)
+
