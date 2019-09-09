@@ -14,7 +14,7 @@ description: 'This is main code for building cnn models. #PREVIEW'
 이 페이지에서 리뷰하고자 하는 코드는 **1\_Building\_CNN\_Models\_in\_Tensorflow.ipynb** 이며,   
 이는 전체 코드 중 모델을 학습시키는 메인 코드를 담당하고 하고 있다고 할 수 있다.   
 즉, 아래에 나와있는 코드 모두를 import 하게 되는데,   
-그 코드들에 대한 것은 다른 페이지에 따로 빼서 리뷰하도록 하겠다. 
+그 코드들에 대한 것은 하위 페이지로 따로 빼서 리뷰하도록 하겠다. 
 
 ### Import
 
@@ -65,7 +65,9 @@ current_path = os.path.realpath('..')
    ```
 
    cnn\_models 디렉토리 내에는 여러가지 모델을 구현해놓은 파일들이 담겨 있다.  
-   각 model들과 utils.py 에 대해서는 다음 링크에서 자세히 설명해두었다.  
+   LeNet-5 \[ [lenet5.py](lenet5.py.md) \], AlexNet \[ [alexnet.py](alexnet.py.md) \], VGGNet \[ [vggnet16.py](vggnet16.py.md) \] 이 있다.   
+   utils.py 에는 학습을 위해 필요한 여러가지 함수들을 정의해놓았다. \[[ page link to utils.py](utils.py.md) \]  
+   옆의 링크를 따라가면 자세한 설명을 볼 수 있다.   
 
 3.  load\_data
 
@@ -84,9 +86,11 @@ current_path = os.path.realpath('..')
    current_path = os.path.realpath('..')
    ```
 
-   defaultdict 모듈을 불러온다.  
-   os 모듈은 utils.py 에서 불러왔기 때문에 여기서는 생략되었다.  
-   current\_path를 현재보다 상위 디렉토리로 지정해준다.
+   defaultdict 모듈을 불러온다. ~~\(나중에 어떻게 쓰이는지 보고 내용 추가\)~~  
+  
+   앞으로 쓰일 현재 경로\(current\_path\)를 지정해주기 위해 os 모듈의 함수를 사용할텐데,   
+   os 모듈은 utils.py 에서 불러왔기 때문에 여기서는 import 하는 코드가 생략되었다.   
+   current\_path를 현재\(_notebooks_\)보다 상위 디렉토리로 지정해준다.
 
 ### Load Data
 
@@ -127,7 +131,7 @@ test_dataset, test_labels = train_dataset_[1000:,:,:,:], train_labels_[1000:,:]
    컬러 이미지 이므로 c10\_image\_depth는 3이 된다.  
    c10\_num\_labels는, 라벨이 총 10개이기에 10이 된다. 
 
-3. oxflower-17 꽃 \*\*\* 
+3. oxflower-17 꽃 데이터셋 ~~\(load.py 코드 리뷰하고나서 내용 추가\)~~
 
 
 

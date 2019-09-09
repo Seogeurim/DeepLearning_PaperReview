@@ -8,6 +8,10 @@
 ## Code-Review <a id="codereview"></a>
 
 * [Building CNN Models 1](codereview/building-cnn-models/README.md)
+  * [lenet5.py](codereview/building-cnn-models/lenet5.py.md)
+  * [alexnet.py](codereview/building-cnn-models/alexnet.py.md)
+  * [vggnet16.py](codereview/building-cnn-models/vggnet16.py.md)
+  * [utils.py](codereview/building-cnn-models/utils.py.md)
   * [load\_data.py](codereview/building-cnn-models/load_data.py.md)
 * [Building CNN Models 2](codereview/building-cnn-models-2.md)
 
