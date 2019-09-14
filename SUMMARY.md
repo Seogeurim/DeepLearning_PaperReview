@@ -14,4 +14,8 @@
   * [utils.py](codereview/building-cnn-models/utils.py.md)
   * [load\_data.py](codereview/building-cnn-models/load_data.py.md)
 * [Building CNN Models 2](codereview/building-cnn-models-2.md)
+* [3D-CNN](codereview/3d-cnn/README.md)
+  * [real\_time\_input\_data.py](codereview/3d-cnn/real_time_input_data.py.md)
+  * [c3d\_model.py](codereview/3d-cnn/c3d_model.py.md)
+  * [real\_time\_c3d.py](codereview/3d-cnn/real_time_c3d.py.md)
 

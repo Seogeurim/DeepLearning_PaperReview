@@ -53,7 +53,8 @@ Num\_Hidden은 C5과 F6의 feature map 및 유닛의 개수로, 각각 120개, 8
 
 weight 및 bias 생성 함수이다.   
 앞서 설정해준 변수들을 input으로 받고,   
-\(코드는 MNIST 기준\) input 이미지 사이즈, depth, label 수 \(28 x 28, 1, 10\)도 input으로 넣어준다.
+\(코드는 MNIST 기준\) input 이미지 사이즈, depth, label 수 \(28 x 28, 1, 10\)도 input으로 넣어준다.   
+: default 값으로 정해줌 
 
 ```python
 def variables_lenet5(filter_size = LENET5_FILTER_SIZE, filter_depth1 = LENET5_FILTER_DEPTH_1, 
@@ -87,7 +88,7 @@ def variables_lenet5(filter_size = LENET5_FILTER_SIZE, filter_depth1 = LENET5_FI
 
 1. **w1, b1 \[ layer 1 : C1+S2 \]** w1 : \[filter\_size, filter\_size, image\_depth, filter\_depth1\] 의 shape에 맞는 난수를 생성하여 Variable로 만들어 준다. b1 : filter\_depth1\(C1의 feature map의 개수\) 의 shape에 맞게, 값은 0으로 초기화한 텐서 Variable을 만들어준다. 
 2. **w2, b2 \[ layer 2 : C3+S4 \]** w2 : \[filter\_size, filter\_size, filter\_depth1, filter\_depth2\] 의 shape에 맞는 난수를 생성하여 Variable로 만들어 준다. b2 : filter\_depth2\(C3의 feature map의 개수\) 의 shape에 맞게, 값은 1.0으로 초기화한 텐서 Variable을 만들어준다. 
-3. **w3, b3 \[ layer 3 : C5 \]** w3: \[\(image\_width // 5\)\*\(image\_height // 5\)\*filter\_depth2, num\_hidden1\] 의 shape에 맞는 난수를 생성하여 Variable로 만들어 준다.  b3 : num\_hidden1\(C5의 feature map의 개수\) 의 shape에 맞게, 값은 1.0으로 초기화한 텐서 Variable을 만들어준다. 
+3. **w3, b3 \[ layer 3 : C5 \]** w3: \[\(image\_width / 4 - 2\)\*\(image\_height / 4 - 2\)\*filter\_depth2, num\_hidden1\] 의 shape에 맞는 난수를 생성하여 Variable로 만들어 준다.  b3 : num\_hidden1\(C5의 feature map의 개수\) 의 shape에 맞게, 값은 1.0으로 초기화한 텐서 Variable을 만들어준다. 
 4. **w4, b4 \[ layer 4 : F6 \]** w4 : \[num\_hidden1, num\_hidden2\] 의 shape에 맞는 난수를 생성하여 Variable로 만들어 준다.  b4 : num\_hidden2\(F6의 unit의 개수\) 의 shape에 맞게, 값은 1.0으로 초기화한 텐서 Variable을 만들어준다. 
 5. **w5, b5 \[ layer 5 : OUTPUT \]** w5 : \[num\_hidden2, num\_labels\] 의 shape에 맞는 난수를 생성하여 Variable로 만들어 준다.  b4 : num\_labels\(output의 개수\) 의 shape에 맞게, 값은 1.0으로 초기화한 텐서 Variable을 만들어준다. 
 
